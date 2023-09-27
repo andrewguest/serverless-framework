@@ -1,0 +1,46 @@
+service: get-workout
+
+package:
+  exclude:
+    - node_modules/**
+    - .idea/**
+    - .requirements/**
+    - env/**
+    - README.md
+    - package.json
+    - package-lock.json
+
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: python3.11
+  region: us-east-1
+  runtimeManagement: auto # optional, set how Lambda controls all functions runtime. AWS default is auto; this can either be 'auto' or 'onFunctionUpdate'. For 'manual', see example in hello function below (syntax for both is identical)
+  memorySize: 512 # optional, in MB, default is 1024
+  timeout: 10 # optional, in seconds, default is 6
+  versionFunctions: false # optional, default is true
+  tracing:
+    lambda: true # optional, enables tracing for all functions (can be true (true equals 'Active') 'Active' or 'PassThrough')
+  environment:
+    DYNAMODB_TABLE: 9x90training-workout
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:Query
+            - dynamodb:Scan
+            - dynamodb:GetItem
+            - dynamodb:DescribeTable
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+functions:
+  9x90training_get_workout:
+    handler: handler.lambda_handler # required, handler set in AWS Lambda
+    name: 9x90training_get_workout # optional, Deployed Lambda name
+    description: Function for getting workout data from DynamoDB # optional, Description to publish to AWS
+    runtime: python3.11 # optional overwrite, default is provider runtime
+    memorySize: 512 # optional, in MB, default is 1024
+    timeout: 10 # optional, in seconds, default is 6
+    tracing: PassThrough # optional, overwrite, can be 'Active' or 'PassThrough'

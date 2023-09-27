@@ -1,0 +1,12 @@
+services:
+  post-food:
+    path: post-food
+
+  get-food:
+    path: get-food
+
+  post-workout:
+    path: post-workout
+
+  get-workout:
+    path: get-workout
